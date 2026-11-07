@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHORTS CREATOR STUDIO - Digital Creator Lab</title>
+    <!-- Tailwind CSS CDN per layout responsive e utilità -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome per Icone -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        anthracite: {
+                            900: '#121214',
+                            800: '#1a1a1e',
+                            700: '#242429',
+                            600: '#2e2e35',
+                            500: '#3f3f47'
+                        },
+                        gold: {
+                            light: '#f39c12',
+                            DEFAULT: '#d4af37',
+                            dark: '#b38f2a',
+                            glow: 'rgba(212, 175, 55, 0.25)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #121214;
+            color: #e4e4e7;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f47;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37;
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF 20%, #d4af37 60%, #f39c12 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-border {
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .gold-border-glow:focus, .gold-border-glow:hover {
+            border-color: #d4af37;
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
+        }
+
+        .card-panel {
+            background-color: #1a1a1e;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 0.75rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .card-panel:hover {
+            border-color: rgba(212, 175, 55, 0.25);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37 0%, #b38f2a 100%);
+            color: #121214;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #e5c158 0%, #d4af37 100%);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-gold {
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-gold:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .nav-item.active {
+            background-color: rgba(212, 175, 55, 0.12);
+            color: #d4af37;
+            border-left: 3px solid #d4af37;
+        }
+
+        .social-btn {
+            transition: all 0.2s ease;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(26, 26, 30, 0.8);
+        }
+        .social-btn:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Toast notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #242429;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 12px 20px;
+            position: fixed;
+            z-index: 9999;
+            bottom: 30px;
+            right: 30px;
+            border: 1px solid #d4af37;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row">
+
+    <!-- Toast Notice -->
+    <div id="toast" class="flex items-center gap-3">
+        <i id="toast-icon" class="fas fa-check-circle text-gold"></i>
+        <span id="toast-message">Operazione completata con successo!</span>
+    </div>
+
+    <!-- Sidebar Desktop -->
+    <aside class="w-full md:w-64 bg-anthracite-800 border-b md:border-b-0 md:border-r border-white/10 flex-shrink-0 flex flex-col justify-between hidden md:flex">
+        <div>
+            <!-- Header Brand -->
+            <div class="p-5 border-b border-white/10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-gold/10 border border-gold flex items-center justify-center text-gold text-xl font-bold">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-bold text-sm tracking-wider text-white">SHORTS CREATOR</h1>
+                            <span class="text-xs text-gold font-semibold uppercase tracking-widest block">Digital Creator Lab</span>
+                        </div>
+                    </div>
+                </div>
+                <p data-i18n="tagline" class="text-xs text-gray-400 mt-2">Il tuo laboratorio creativo per video brevi.</p>
+            </div>
+
+            <!-- Nav Links -->
+            <nav class="p-3 space-y-1">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-300 hover:bg-anthracite-700 transition">
+                    <i class="fas fa-chart-pie w-5 text-center"></i> <span data-i18n="nav_dashboard">Dashboard</span>
+                </button>
+                <button onclick="switchTab('generator')" id="nav-generator" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-300 hover:bg-anthracite-700 transition">
+                    <i class="fas fa-pen-nib w-5 text-center"></i> <span data-i18n="nav_generator">Generatore Shorts</span>
+                </button>
+                <button onclick="switchTab('quotes')" id="nav-quotes" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-300 hover:bg-anthracite-700 transition">
+                    <i class="fas fa-quote-right w-5 text-center"></i> <span data-i18n="nav_quotes">Frasi Motivazionali</span>
+                </button>
+                <button onclick="switchTab('seo')" id="nav-seo" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-300 hover:bg-anthracite-700 transition">
+                    <i class="fas fa-hashtag w-5 text-center"></i> <span data-i18n="nav_seo">Descrizioni & SEO</span>
+                </button>
+                <button onclick="switchTab('ideas')" id="nav-ideas" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-300 hover:bg-anthracite-700 transition">
+                    <i class="fas fa-lightbulb w-5 text-center"></i> <span data-i18n="nav_ideas">Generatore Idee</span>
+                </button>
+                <button onclick="switchTab('planner')" id="nav-planner" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-300 hover:bg-anthracite-700 transition">
+                    <i class="fas fa-calendar-alt w-5 text-center"></i> <span data-i18n="nav_planner">Pianificatore</span>
+                </button>
+                <button onclick="switchTab('archive')" id="nav-archive" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-300 hover:bg-anthracite-700 transition">
+                    <i class="fas fa-archive w-5 text-center"></i> <span data-i18n="nav_archive">Archivio Progetti</span>
+                </button>
+                <button onclick="switchTab('backup')" id="nav-backup" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-300 hover:bg-anthracite-700 transition">
+                    <i class="fas fa-database w-5 text-center"></i> <span data-i18n="nav_backup">Backup & Dati</span>
+                </button>
+                <button onclick="switchTab('guide')" id="nav-guide" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-300 hover:bg-anthracite-700 transition">
+                    <i class="fas fa-book-open w-5 text-center"></i> <span data-i18n="nav_guide">Guida Utente</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Social Community Box in Sidebar -->
+        <div class="p-3 border-t border-white/10 space-y-2">
+            <p data-i18n="community_title" class="text-[10px] font-bold text-gold uppercase tracking-wider text-center">Community & Social</p>
+            <a href="https://whatsapp.com/channel/0029Vb8tqXaB4hdRxxjPkp3C" target="_blank" class="social-btn w-full p-2 rounded-lg flex items-center gap-2 text-xs text-green-400">
+                <i class="fab fa-whatsapp text-sm text-green-500"></i> <span data-i18n="btn_whatsapp">Canale WhatsApp</span>
+            </a>
+            <a href="https://www.tiktok.com/@digital_creatorlab" target="_blank" class="social-btn w-full p-2 rounded-lg flex items-center gap-2 text-xs text-gray-200">
+                <i class="fab fa-tiktok text-sm text-pink-500"></i> <span data-i18n="btn_tiktok">Seguici su TikTok</span>
+            </a>
+            <a href="https://www.facebook.com/DigitalCreatorLabIT/" target="_blank" class="social-btn w-full p-2 rounded-lg flex items-center gap-2 text-xs text-blue-400">
+                <i class="fab fa-facebook text-sm text-blue-500"></i> <span data-i18n="btn_facebook">Seguici su Facebook</span>
+            </a>
+            <div class="pt-2 text-center">
+                <span class="text-[10px] text-gray-500">v2.5 Free Edition • Offline Ready</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile Top Navigation Header -->
+    <header class="md:hidden bg-anthracite-800 border-b border-white/10 p-4 flex items-center justify-between sticky top-0 z-40">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded bg-gold/10 border border-gold flex items-center justify-center text-gold text-sm font-bold">
+                <i class="fas fa-film"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-xs text-white">SHORTS CREATOR STUDIO</h1>
+                <span class="text-[10px] text-gold font-semibold uppercase">Digital Creator Lab</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <!-- Language Switcher Mobile -->
+            <select onchange="changeLanguage(this.value)" class="lang-select bg-anthracite-900 border border-gold/40 text-gold text-xs rounded px-2 py-1 focus:outline-none">
+                <option value="IT">🇮🇹 IT</option>
+                <option value="EN">🇬🇧 EN</option>
+            </select>
+            <button onclick="toggleMobileMenu()" class="text-gray-300 hover:text-gold p-2">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="hidden fixed inset-0 bg-anthracite-900/95 z-50 flex-col p-5 overflow-y-auto">
+        <div class="flex justify-between items-center pb-4 border-b border-white/10">
+            <span class="font-bold text-gold" data-i18n="mobile_menu">MENU NAVIGAZIONE</span>
+            <button onclick="toggleMobileMenu()" class="text-gray-400 text-2xl">&times;</button>
+        </div>
+        <nav class="mt-4 space-y-2">
+            <button onclick="switchTab('dashboard'); toggleMobileMenu();" class="w-full text-left p-3 rounded-lg bg-anthracite-800 text-gray-200 flex items-center gap-3"><i class="fas fa-chart-pie text-gold"></i> <span data-i18n="nav_dashboard">Dashboard</span></button>
+            <button onclick="switchTab('generator'); toggleMobileMenu();" class="w-full text-left p-3 rounded-lg bg-anthracite-800 text-gray-200 flex items-center gap-3"><i class="fas fa-pen-nib text-gold"></i> <span data-i18n="nav_generator">Generatore Shorts</span></button>
+            <button onclick="switchTab('quotes'); toggleMobileMenu();" class="w-full text-left p-3 rounded-lg bg-anthracite-800 text-gray-200 flex items-center gap-3"><i class="fas fa-quote-right text-gold"></i> <span data-i18n="nav_quotes">Frasi Motivazionali</span></button>
+            <button onclick="switchTab('seo'); toggleMobileMenu();" class="w-full text-left p-3 rounded-lg bg-anthracite-800 text-gray-200 flex items-center gap-3"><i class="fas fa-hashtag text-gold"></i> <span data-i18n="nav_seo">Descrizioni & SEO</span></button>
+            <button onclick="switchTab('ideas'); toggleMobileMenu();" class="w-full text-left p-3 rounded-lg bg-anthracite-800 text-gray-200 flex items-center gap-3"><i class="fas fa-lightbulb text-gold"></i> <span data-i18n="nav_ideas">Generatore Idee</span></button>
+            <button onclick="switchTab('planner'); toggleMobileMenu();" class="w-full text-left p-3 rounded-lg bg-anthracite-800 text-gray-200 flex items-center gap-3"><i class="fas fa-calendar-alt text-gold"></i> <span data-i18n="nav_planner">Pianificatore</span></button>
+            <button onclick="switchTab('archive'); toggleMobileMenu();" class="w-full text-left p-3 rounded-lg bg-anthracite-800 text-gray-200 flex items-center gap-3"><i class="fas fa-archive text-gold"></i> <span data-i18n="nav_archive">Archivio Progetti</span></button>
+            <button onclick="switchTab('backup'); toggleMobileMenu();" class="w-full text-left p-3 rounded-lg bg-anthracite-800 text-gray-200 flex items-center gap-3"><i class="fas fa-database text-gold"></i> <span data-i18n="nav_backup">Backup & Dati</span></button>
+            <button onclick="switchTab('guide'); toggleMobileMenu();" class="w-full text-left p-3 rounded-lg bg-anthracite-800 text-gray-200 flex items-center gap-3"><i class="fas fa-book-open text-gold"></i> <span data-i18n="nav_guide">Guida Utente</span></button>
+        </nav>
+        
+        <div class="mt-6 pt-4 border-t border-white/10 space-y-2">
+            <p data-i18n="community_title" class="text-xs font-bold text-gold uppercase tracking-wider">Community & Social</p>
+            <a href="https://whatsapp.com/channel/0029Vb8tqXaB4hdRxxjPkp3C" target="_blank" class="social-btn w-full p-2.5 rounded-lg flex items-center gap-3 text-xs text-green-400">
+                <i class="fab fa-whatsapp text-base text-green-500"></i> <span data-i18n="btn_whatsapp">Canale WhatsApp</span>
+            </a>
+            <a href="https://www.tiktok.com/@digital_creatorlab" target="_blank" class="social-btn w-full p-2.5 rounded-lg flex items-center gap-3 text-xs text-gray-200">
+                <i class="fab fa-tiktok text-base text-pink-500"></i> <span data-i18n="btn_tiktok">Seguici su TikTok</span>
+            </a>
+            <a href="https://www.facebook.com/DigitalCreatorLabIT/" target="_blank" class="social-btn w-full p-2.5 rounded-lg flex items-center gap-3 text-xs text-blue-400">
+                <i class="fab fa-facebook text-base text-blue-500"></i> <span data-i18n="btn_facebook">Seguici su Facebook</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full overflow-y-auto">
+        <!-- Top Toolbar with Desktop Language Selector -->
+        <div class="hidden md:flex justify-end items-center mb-6 pb-2 border-b border-white/5">
+            <div class="flex items-center gap-2 bg-anthracite-800 px-3 py-1.5 rounded-lg border border-gold/30">
+                <i class="fas fa-globe text-gold text-xs"></i>
+                <span data-i18n="lang_label" class="text-xs text-gray-400 font-semibold">Lingua / Language:</span>
+                <select onchange="changeLanguage(this.value)" class="lang-select bg-anthracite-900 border border-gold/40 text-gold text-xs rounded px-2 py-1 font-bold focus:outline-none cursor-pointer">
+                    <option value="IT">🇮🇹 Italiano</option>
+                    <option value="EN">🇬🇧 English</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- TAB 1: DASHBOARD -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+            <!-- Welcome Banner -->
+            <div class="card-panel p-6 bg-gradient-to-r from-anthracite-800 via-anthracite-700 to-anthracite-800 border-l-4 border-gold relative overflow-hidden">
+                <div class="max-w-2xl">
+                    <h2 data-i18n="dash_welcome_title" class="text-2xl font-bold gold-gradient-text mb-2">Benvenuto in Shorts Creator Studio</h2>
+                    <p data-i18n="dash_welcome_desc" class="text-sm text-gray-300 leading-relaxed">
+                        Il tuo ambiente professionale e completo per ideare, strutturare e pianificare video brevi d'impatto per **YouTube Shorts, TikTok e Instagram Reels**. Tutto conservato al 100% nel tuo browser in totale privacy.
+                    </p>
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        <button onclick="switchTab('generator')" class="btn-gold px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                            <i class="fas fa-plus-circle"></i> <span data-i18n="btn_new_short">Nuovo Short</span>
+                        </button>
+                        <button onclick="switchTab('ideas')" class="btn-outline-gold px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                            <i class="fas fa-lightbulb"></i> <span data-i18n="btn_explore_ideas">Esplora Idee</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="card-panel p-5 flex items-center justify-between">
+                    <div>
+                        <p data-i18n="stat_projects" class="text-xs text-gray-400 uppercase font-semibold">Progetti Salvati</p>
+                        <h3 id="stat-total-projects" class="text-3xl font-bold text-white mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                </div>
+                <div class="card-panel p-5 flex items-center justify-between">
+                    <div>
+                        <p data-i18n="stat_scripts" class="text-xs text-gray-400 uppercase font-semibold">Script Completi</p>
+                        <h3 id="stat-total-scripts" class="text-3xl font-bold text-white mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl">
+                        <i class="fas fa-scroll"></i>
+                    </div>
+                </div>
+                <div class="card-panel p-5 flex items-center justify-between">
+                    <div>
+                        <p data-i18n="stat_planner" class="text-xs text-gray-400 uppercase font-semibold">Video Pianificati</p>
+                        <h3 id="stat-scheduled-videos" class="text-3xl font-bold text-white mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xl">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Access & Recent Projects -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Recent Items (2 cols) -->
+                <div class="lg:col-span-2 card-panel p-6">
+                    <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+                        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                            <i class="fas fa-history text-gold"></i> Ultimi Progetti Modificati
+                        </h3>
+                        <button onclick="switchTab('archive')" class="text-xs text-gold hover:underline">Vedi Tutti</button>
+                    </div>
+                    <div id="recent-projects-list" class="space-y-3">
+                        <!-- Dynamic render -->
+                    </div>
+                </div>
+
+                <!-- Quick Actions Panel -->
+                <div class="card-panel p-6 flex flex-col justify-between space-y-4">
+                    <div>
+                        <h3 class="font-bold text-lg text-white mb-4 border-b border-white/10 pb-3 flex items-center gap-2">
+                            <i class="fas fa-bolt text-gold"></i> Azioni Rapide
+                        </h3>
+                        <div class="space-y-3">
+                            <button onclick="startNewScript()" class="w-full text-left p-3 rounded-lg bg-anthracite-700 hover:bg-anthracite-600 transition flex items-center justify-between text-sm text-gray-200">
+                                <span><i class="fas fa-pen text-gold mr-2"></i> Scrivi Nuovo Copione</span>
+                                <i class="fas fa-chevron-right text-xs text-gray-500"></i>
+                            </button>
+                            <button onclick="switchTab('quotes')" class="w-full text-left p-3 rounded-lg bg-anthracite-700 hover:bg-anthracite-600 transition flex items-center justify-between text-sm text-gray-200">
+                                <span><i class="fas fa-quote-right text-gold mr-2"></i> Genera Frase d'Impatto</span>
+                                <i class="fas fa-chevron-right text-xs text-gray-500"></i>
+                            </button>
+                            <button onclick="switchTab('seo')" class="w-full text-left p-3 rounded-lg bg-anthracite-700 hover:bg-anthracite-600 transition flex items-center justify-between text-sm text-gray-200">
+                                <span><i class="fas fa-hashtag text-gold mr-2"></i> Genera Descrizione & SEO</span>
+                                <i class="fas fa-chevron-right text-xs text-gray-500"></i>
+                            </button>
+                            <button onclick="switchTab('planner')" class="w-full text-left p-3 rounded-lg bg-anthracite-700 hover:bg-anthracite-600 transition flex items-center justify-between text-sm text-gray-200">
+                                <span><i class="fas fa-calendar-plus text-gold mr-2"></i> Pianifica Video</span>
+                                <i class="fas fa-chevron-right text-xs text-gray-500"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-anthracite-900/60 rounded-lg border border-gold/20 text-xs text-gray-400">
+                        <i class="fas fa-shield-alt text-gold mr-1"></i> I tuoi dati rimangono salvati localmente sul browser.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: GENERATORE SHORTS & EDITOR COPIONE -->
+        <section id="tab-generator" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-pen-nib text-gold"></i> Generatore Shorts & Editor Copione
+                    </h2>
+                    <p class="text-xs text-gray-400">Progetta la struttura tecnica ed esecutiva del tuo video breve.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="resetEditorForm()" class="btn-outline-gold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1">
+                        <i class="fas fa-trash-alt"></i> Reset
+                    </button>
+                    <button onclick="saveCurrentScriptProject()" class="btn-gold px-4 py-1.5 rounded-lg text-xs flex items-center gap-1">
+                        <i class="fas fa-save"></i> Salva Progetto
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Parametri Short -->
+            <div class="card-panel p-5">
+                <h3 class="text-sm font-bold text-gold uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="fas fa-sliders-h"></i> 1. Parametri & Target Video
+                </h3>
+                <input type="hidden" id="editor-project-id" value="">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Titolo del Video *</label>
+                        <input type="text" id="script-title" placeholder="Es: 3 Segreti per Aumentare la Produttività" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Argomento Principale</label>
+                        <input type="text" id="script-topic" placeholder="Es: Gestione del Tempo" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Categoria</label>
+                        <select id="script-category" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                            <option value="Motivazionale">Motivazionale</option>
+                            <option value="Divertimento">Divertimento</option>
+                            <option value="Curiosità">Curiosità</option>
+                            <option value="Tecnologia">Tecnologia</option>
+                            <option value="Intelligenza Artificiale">Intelligenza Artificiale</option>
+                            <option value="Produttività" selected>Produttività</option>
+                            <option value="Relax">Relax</option>
+                            <option value="Educazione">Educazione</option>
+                            <option value="Promozione">Promozione</option>
+                            <option value="Personalizzato">Personalizzato</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Piattaforma Destinazione</label>
+                        <select id="script-platform" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                            <option value="YouTube Shorts">YouTube Shorts</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="Instagram Reels">Instagram Reels</option>
+                            <option value="Tutte le piattaforme" selected>Tutte le piattaforme</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Durata Desiderata</label>
+                        <select id="script-duration" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                            <option value="15s">15 Secondi</option>
+                            <option value="20s">20 Secondi</option>
+                            <option value="30s" selected>30 Secondi</option>
+                            <option value="45s">45 Secondi</option>
+                            <option value="60s">60 Secondi</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Tono Comunicativo</label>
+                        <select id="script-tone" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                            <option value="Motivazionale">Motivazionale</option>
+                            <option value="Professionale">Professionale</option>
+                            <option value="Emotivo">Emotivo</option>
+                            <option value="Ironico">Ironico</option>
+                            <option value="Coinvolgente" selected>Coinvolgente</option>
+                            <option value="Narrativo">Narrativo</option>
+                            <option value="Misterioso">Misterioso</option>
+                            <option value="Ispirazionale">Ispirazionale</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Pubblico / Obiettivo</label>
+                        <input type="text" id="script-target" placeholder="Es: Studenti, Professionisti / Conversione" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Script Stats & Actions Header -->
+            <div class="card-panel p-4 bg-anthracite-800 flex flex-wrap items-center justify-between gap-4 border border-gold/30">
+                <div class="flex items-center gap-6">
+                    <div>
+                        <span class="text-xs text-gray-400 block">Totale Parole</span>
+                        <span id="script-word-count" class="text-xl font-bold text-gold">0</span>
+                    </div>
+                    <div class="border-l border-white/10 pl-6">
+                        <span class="text-xs text-gray-400 block">Stima Tempo Parlato (~140 wpm)</span>
+                        <span id="script-time-estimate" class="text-xl font-bold text-white">0 sec</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="autoFillScriptTemplate()" class="btn-outline-gold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1">
+                        <i class="fas fa-magic"></i> Carica Struttura Esempio
+                    </button>
+                    <button onclick="copyFullScriptToClipboard()" class="btn-gold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1">
+                        <i class="fas fa-copy"></i> Copia Copione Integrale
+                    </button>
+                </div>
+            </div>
+
+            <!-- Structured Script Sections -->
+            <div class="space-y-4">
+                <h3 class="text-sm font-bold text-gold uppercase tracking-wider flex items-center gap-2">
+                    <i class="fas fa-layer-group"></i> 2. Struttura Sequenziale del Copione
+                </h3>
+
+                <!-- Section A: HOOK -->
+                <div class="card-panel p-4 border-l-4 border-red-500">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-red-400 uppercase tracking-wide flex items-center gap-2">
+                            <i class="fas fa-fish"></i> A. Apertura / Hook (Primi 3-5 secondi)
+                        </label>
+                        <span class="text-[11px] text-gray-400">Cattura l'attenzione immediata</span>
+                    </div>
+                    <textarea id="sec-hook" oninput="updateScriptStats()" rows="2" placeholder="Frase ad impatto: Fermi tutti! Se fai ancora questo errore stai sprecando tempo..." class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none gold-border-glow"></textarea>
+                </div>
+
+                <!-- Section B: SVILUPPO -->
+                <div class="card-panel p-4 border-l-4 border-blue-500">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-blue-400 uppercase tracking-wide flex items-center gap-2">
+                            <i class="fas fa-align-left"></i> B. Sviluppo Centrale
+                        </label>
+                        <span class="text-[11px] text-gray-400">Spiega il valore o il concetto in modo sintetico</span>
+                    </div>
+                    <textarea id="sec-body" oninput="updateScriptStats()" rows="4" placeholder="Ecco i 3 passaggi fondamentali per risolvere il problema..." class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none gold-border-glow"></textarea>
+                </div>
+
+                <!-- Section C: MOMENTO FORTE -->
+                <div class="card-panel p-4 border-l-4 border-gold">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-gold uppercase tracking-wide flex items-center gap-2">
+                            <i class="fas fa-bolt"></i> C. Momento Forte / Climax
+                        </label>
+                        <span class="text-[11px] text-gray-400">Frase chiave memorabile o rivelazione</span>
+                    </div>
+                    <textarea id="sec-climax" oninput="updateScriptStats()" rows="2" placeholder="Ricorda sempre: la qualità batte la quantità ogni singola volta." class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none gold-border-glow"></textarea>
+                </div>
+
+                <!-- Section D: CONCLUSIONE -->
+                <div class="card-panel p-4 border-l-4 border-purple-500">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-purple-400 uppercase tracking-wide flex items-center gap-2">
+                            <i class="fas fa-flag-checkered"></i> D. Conclusione
+                        </label>
+                        <span class="text-[11px] text-gray-400">Chiusura concisa ed efficace</span>
+                    </div>
+                    <textarea id="sec-conclusion" oninput="updateScriptStats()" rows="2" placeholder="Applica questo consiglio da oggi e vedrai subito la differenza." class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none gold-border-glow"></textarea>
+                </div>
+
+                <!-- Section E: CALL TO ACTION -->
+                <div class="card-panel p-4 border-l-4 border-green-500">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-green-400 uppercase tracking-wide flex items-center gap-2">
+                            <i class="fas fa-bullhorn"></i> E. Call to Action (CTA)
+                        </label>
+                        <span class="text-[11px] text-gray-400">Invito all'azione chiaro</span>
+                    </div>
+                    <textarea id="sec-cta" oninput="updateScriptStats()" rows="2" placeholder="Salva questo reel e iscriviti al canale per altri consigli quotidiani!" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none gold-border-glow"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: GENERATORE FRASI MOTIVAZIONALI -->
+        <section id="tab-quotes" class="tab-content hidden space-y-6">
+            <div class="border-b border-white/10 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-quote-right text-gold"></i> Generatore di Frasi Motivazionali & Citazioni
+                </h2>
+                <p class="text-xs text-gray-400">Sfoglia la libreria integrata di frasi d'impatto o componi un testo personalizzato.</p>
+            </div>
+
+            <!-- Controlli Filtro & Generazione -->
+            <div class="card-panel p-5 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Categoria Frase</label>
+                    <select id="quote-filter-category" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                        <option value="ALL">Tutte le Categorie</option>
+                        <option value="Successo & Azione">Successo & Azione</option>
+                        <option value="Mentalità & Crescita">Mentalità & Crescita</option>
+                        <option value="Resilienza & Forza">Resilienza & Forza</option>
+                        <option value="Focus & Produttività">Focus & Produttività</option>
+                        <option value="Ispirazione & Sogni">Ispirazione & Sogni</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-300 mb-1">Lunghezza Testo</label>
+                    <select id="quote-filter-length" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                        <option value="ALL">Qualsiasi Lunghezza</option>
+                        <option value="Breve">Breve (Impatto rapido)</option>
+                        <option value="Medio">Medio (Citazione strutturata)</option>
+                    </select>
+                </div>
+                <div>
+                    <button onclick="generateRandomQuote()" class="btn-gold w-full py-2.5 rounded-lg text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-dice"></i> Genera Frase Casuale
+                    </button>
+                </div>
+                <div>
+                    <button onclick="openCustomQuoteModal()" class="btn-outline-gold w-full py-2.5 rounded-lg text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-plus"></i> Aggiungi Frase Mia
+                    </button>
+                </div>
+            </div>
+
+            <!-- Highlight Quote Box -->
+            <div id="featured-quote-card" class="card-panel p-6 border-l-4 border-gold bg-gradient-to-r from-anthracite-800 to-anthracite-700 text-center relative">
+                <i class="fas fa-quote-left text-4xl text-gold/20 absolute top-4 left-4"></i>
+                <p id="featured-quote-text" class="text-xl md:text-2xl font-serif italic text-white my-4 relative z-10">
+                    "Il miglior momento per piantare un albero era 20 anni fa. Il secondo miglior momento è adesso."
+                </p>
+                <div class="flex items-center justify-center gap-3 text-xs text-gold font-semibold uppercase tracking-wider mb-4">
+                    <span id="featured-quote-cat">Mentalità & Crescita</span> • <span id="featured-quote-author">Proverbio</span>
+                </div>
+                <div class="flex justify-center gap-2">
+                    <button onclick="copyFeaturedQuote()" class="btn-gold px-4 py-1.5 rounded-lg text-xs flex items-center gap-1">
+                        <i class="fas fa-copy"></i> Copia Frase
+                    </button>
+                    <button onclick="sendQuoteToEditor()" class="btn-outline-gold px-4 py-1.5 rounded-lg text-xs flex items-center gap-1">
+                        <i class="fas fa-external-link-alt"></i> Invia a Editor Shorts
+                    </button>
+                </div>
+            </div>
+
+            <!-- Database Frasi Griglia -->
+            <div>
+                <h3 class="text-sm font-bold text-gold uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="fas fa-list"></i> Raccolta Completa Frasi d'Impatto (30+ Pronte)
+                </h3>
+                <div id="quotes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Dynamic rendering -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: GENERATORE DESCRIZIONI E HASHTAG SEO -->
+        <section id="tab-seo" class="tab-content hidden space-y-6">
+            <div class="border-b border-white/10 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-hashtag text-gold"></i> Generatore Descrizioni & Hashtag SEO
+                </h2>
+                <p class="text-xs text-gray-400">Prepara il testo di pubblicazione ottimizzato per la SEO dei tuoi Short e Reel.</p>
+            </div>
+
+            <!-- Disclaimer Trasparenza -->
+            <div class="p-3 bg-anthracite-800 border border-gold/30 rounded-lg text-xs text-gray-300 flex items-center gap-3">
+                <i class="fas fa-info-circle text-gold text-lg flex-shrink-0"></i>
+                <span>Nota di Trasparenza: I testi generati sono modelli strutturati di suggerimento e non garantiscono indicizzazione automatica. Tutti i campi rimangono liberamente modificabili.</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Form Parametri SEO -->
+                <div class="card-panel p-5 space-y-4">
+                    <h3 class="text-sm font-bold text-gold uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-sliders-h"></i> Dettagli Video
+                    </h3>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Titolo Video</label>
+                        <input type="text" id="seo-title" placeholder="Es: Come superare la pigrizia in 3 passi" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Argomento / Nicchia</label>
+                        <input type="text" id="seo-topic" placeholder="Es: Crescita Personale, Produttività" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Piattaforma</label>
+                        <select id="seo-platform" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                            <option value="YouTube Shorts">YouTube Shorts</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="Instagram Reels">Instagram Reels</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Parole Chiave (separate da virgola)</label>
+                        <input type="text" id="seo-keywords" placeholder="Es: motivazione, disciplina, abitudini, successo" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+                    </div>
+                    <button onclick="generateSEOPackage()" class="btn-gold w-full py-3 rounded-lg text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-cogs"></i> Genera Pacchetto Pubblicazione
+                    </button>
+                </div>
+
+                <!-- Risultato Composizione SEO -->
+                <div class="card-panel p-5 space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-sm font-bold text-gold uppercase tracking-wider flex items-center gap-2">
+                                <i class="fas fa-file-alt"></i> Testo Finale da Copiare
+                            </h3>
+                            <button onclick="copySEOPackage()" class="btn-gold px-3 py-1 rounded text-xs flex items-center gap-1">
+                                <i class="fas fa-copy"></i> Copia Tutto
+                            </button>
+                        </div>
+                        <textarea id="seo-output" rows="12" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-3 text-xs md:text-sm font-mono text-gray-200 focus:outline-none gold-border-glow" placeholder="Il testo completo generato apparirà qui..."></textarea>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button onclick="saveSEOToProject()" class="btn-outline-gold px-4 py-2 rounded-lg text-xs flex items-center gap-1">
+                            <i class="fas fa-save"></i> Salva in Archivio
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: GENERATORE DI IDEE -->
+        <section id="tab-ideas" class="tab-content hidden space-y-6">
+            <div class="border-b border-white/10 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-lightbulb text-gold"></i> Generatore di Idee per Video Brevi
+                </h2>
+                <p class="text-xs text-gray-400">Oltre 50 spunti creativi pronti all'uso divisi per categoria.</p>
+            </div>
+
+            <!-- Filtri Idee -->
+            <div class="card-panel p-4 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs font-semibold text-gray-400">Filtra:</span>
+                    <button onclick="filterIdeas('ALL')" class="idea-filter-btn px-3 py-1 rounded-full text-xs bg-gold text-anthracite-900 font-bold" data-cat="ALL">Tutte</button>
+                    <button onclick="filterIdeas('Motivazionale')" class="idea-filter-btn px-3 py-1 rounded-full text-xs bg-anthracite-700 text-gray-300 hover:text-white" data-cat="Motivazionale">Motivazionale</button>
+                    <button onclick="filterIdeas('Tecnologia & AI')" class="idea-filter-btn px-3 py-1 rounded-full text-xs bg-anthracite-700 text-gray-300 hover:text-white" data-cat="Tecnologia & AI">Tecnologia & AI</button>
+                    <button onclick="filterIdeas('Divertimento')" class="idea-filter-btn px-3 py-1 rounded-full text-xs bg-anthracite-700 text-gray-300 hover:text-white" data-cat="Divertimento">Divertimento</button>
+                    <button onclick="filterIdeas('Educativo & Tips')" class="idea-filter-btn px-3 py-1 rounded-full text-xs bg-anthracite-700 text-gray-300 hover:text-white" data-cat="Educativo & Tips">Educativo & Tips</button>
+                    <button onclick="filterIdeas('Promozione & App')" class="idea-filter-btn px-3 py-1 rounded-full text-xs bg-anthracite-700 text-gray-300 hover:text-white" data-cat="Promozione & App">Promozione</button>
+                    <button onclick="filterIdeas('Relax & Musica')" class="idea-filter-btn px-3 py-1 rounded-full text-xs bg-anthracite-700 text-gray-300 hover:text-white" data-cat="Relax & Musica">Relax</button>
+                </div>
+                <button onclick="pickRandomIdea()" class="btn-gold px-4 py-1.5 rounded-lg text-xs flex items-center gap-1">
+                    <i class="fas fa-random"></i> Idea Casuale
+                </button>
+            </div>
+
+            <!-- Grid Idee -->
+            <div id="ideas-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamic Render -->
+            </div>
+        </section>
+
+        <!-- TAB 6: PIANIFICATORE EDITORIALE -->
+        <section id="tab-planner" class="tab-content hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-calendar-alt text-gold"></i> Pianificatore Editoriale
+                    </h2>
+                    <p class="text-xs text-gray-400">Organizza le date di pubblicazione e lo stato dei tuoi contenuti.</p>
+                </div>
+                <button onclick="openPlannerModal()" class="btn-gold px-4 py-2 rounded-lg text-xs flex items-center gap-1">
+                    <i class="fas fa-plus"></i> Pianifica Nuovo Video
+                </button>
+            </div>
+
+            <!-- Filtri Pianificatore -->
+            <div class="card-panel p-4 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-gray-400">Filtra per Stato:</span>
+                    <select id="planner-status-filter" onchange="renderPlanner()" class="bg-anthracite-900 border border-white/10 rounded px-2 py-1 text-xs text-white">
+                        <option value="ALL">Tutti gli stati</option>
+                        <option value="Idea">Idea</option>
+                        <option value="Da realizzare">Da realizzare</option>
+                        <option value="In lavorazione">In lavorazione</option>
+                        <option value="Pronto">Pronto</option>
+                        <option value="Pubblicato">Pubblicato</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-gray-400">Filtra Piattaforma:</span>
+                    <select id="planner-platform-filter" onchange="renderPlanner()" class="bg-anthracite-900 border border-white/10 rounded px-2 py-1 text-xs text-white">
+                        <option value="ALL">Tutte le piattaforme</option>
+                        <option value="YouTube Shorts">YouTube Shorts</option>
+                        <option value="TikTok">TikTok</option>
+                        <option value="Instagram Reels">Instagram Reels</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Griglia Schede Scheduler -->
+            <div id="planner-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamic render -->
+            </div>
+        </section>
+
+        <!-- TAB 7: ARCHIVIO PROGETTI -->
+        <section id="tab-archive" class="tab-content hidden space-y-6">
+            <div class="border-b border-white/10 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-archive text-gold"></i> Archivio Centrale Progetti
+                </h2>
+                <p class="text-xs text-gray-400">Gestisci tutti i copioni, frasi e testi salvati nell'applicazione.</p>
+            </div>
+
+            <!-- Barra Ricerca & Filtri -->
+            <div class="card-panel p-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-500 text-xs"></i>
+                    <input type="text" id="archive-search" oninput="renderArchive()" placeholder="Cerca nel titolo o nel testo..." class="w-full bg-anthracite-900 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-xs text-white focus:outline-none gold-border-glow">
+                </div>
+                <div>
+                    <select id="archive-category-filter" onchange="renderArchive()" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2 text-xs text-white focus:outline-none">
+                        <option value="ALL">Tutte le Categorie</option>
+                        <option value="Script">Solo Script Copioni</option>
+                        <option value="SEO">Solo Pacchetti SEO</option>
+                        <option value="Quote">Solo Frasi Motivazionali</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="archive-sort" onchange="renderArchive()" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2 text-xs text-white focus:outline-none">
+                        <option value="newest">Più recenti prima</option>
+                        <option value="oldest">Più datati prima</option>
+                        <option value="title">Ordine alfabetico titolo</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Lista Archivio -->
+            <div id="archive-list" class="space-y-3">
+                <!-- Dynamic render -->
+            </div>
+        </section>
+
+        <!-- TAB 8: BACKUP E RIPRISTINO -->
+        <section id="tab-backup" class="tab-content hidden space-y-6">
+            <div class="border-b border-white/10 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-database text-gold"></i> Backup e Gestione Dati
+                </h2>
+                <p class="text-xs text-gray-400">Esporta o ripristina la tua banca dati locale in totale sicurezza.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Esportazione -->
+                <div class="card-panel p-6 space-y-4 border-l-4 border-green-500">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-green-500/10 text-green-400 flex items-center justify-center text-xl">
+                            <i class="fas fa-file-export"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white">Esporta Archivio (JSON)</h3>
+                            <p class="text-xs text-gray-400">Scarica una copia salvata di tutti i tuoi progetti e configurazioni.</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed">
+                        Il file generato conterrà i tuoi copioni, la pianificazione editoriale e le impostazioni salvate. Puoi conservarlo come backup di sicurezza.
+                    </p>
+                    <button onclick="exportDataJSON()" class="btn-gold w-full py-2.5 rounded-lg text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-download"></i> Scarica Backup JSON
+                    </button>
+                </div>
+
+                <!-- Importazione -->
+                <div class="card-panel p-6 space-y-4 border-l-4 border-blue-500">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl">
+                            <i class="fas fa-file-import"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white">Importa Backup JSON</h3>
+                            <p class="text-xs text-gray-400">Ripristina un archivio salvato precedentemente.</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-300 leading-relaxed">
+                        Seleziona un file `.json` valido generato da questa applicazione per ripristinare i tuoi dati.
+                    </p>
+                    <input type="file" id="import-json-file" accept=".json" class="hidden" onchange="handleImportJSON(event)">
+                    <button onclick="document.getElementById('import-json-file').click()" class="btn-outline-gold w-full py-2.5 rounded-lg text-sm flex items-center justify-center gap-2">
+                        <i class="fas fa-upload"></i> Seleziona File JSON
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reset Dati e Status -->
+            <div class="card-panel p-6 border-l-4 border-red-500 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h3 class="font-bold text-red-400 flex items-center gap-2">
+                        <i class="fas fa-exclamation-triangle"></i> Ripristino di Fabbrica / Cancellazione
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-1">Cancella permanentemente tutti i dati memorizzati su questo browser.</p>
+                    <p class="text-[11px] text-gray-500 mt-1">Ultima modifica/salvataggio registrato: <span id="last-save-timestamp" class="text-gold">Maintained locally</span></p>
+                </div>
+                <button onclick="confirmResetAllData()" class="px-4 py-2 bg-red-600/20 border border-red-500 text-red-400 hover:bg-red-600 hover:text-white transition rounded-lg text-xs font-semibold flex items-center gap-2">
+                    <i class="fas fa-trash"></i> Elimina Tutti i Dati
+                </button>
+            </div>
+        </section>
+
+        <!-- TAB 9: GUIDA UTENTE -->
+        <section id="tab-guide" class="tab-content hidden space-y-6">
+            <div class="border-b border-white/10 pb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-book-open text-gold"></i> <span data-i18n="guide_title">Guida Utente & Manuale Creator</span>
+                </h2>
+                <p data-i18n="guide_subtitle" class="text-xs text-gray-400">Come sfruttare al massimo Shorts Creator Studio per far crescere i tuoi canali.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 1. HOOK -->
+                <div class="card-panel p-5 space-y-3 border-l-4 border-red-500">
+                    <h3 data-i18n="guide_1_h" class="font-bold text-gold flex items-center gap-2 text-sm">
+                        <i class="fas fa-fish"></i> 1. Come Scrivere uno Short & Hook Efficace
+                    </h3>
+                    <p data-i18n="guide_1_p" class="text-xs text-gray-300 leading-relaxed">
+                        Nei primi 3-5 secondi lo spettatore decide se scorrere via o guardare. Struttura il video in 5 fasi: **Apertura (Hook)** d'impatto, **Sviluppo** chiaro del valore, **Momento Forte (Climax)** memorabile, **Conclusione** sintetica e **Call to Action (CTA)** precisa.
+                    </p>
+                </div>
+
+                <!-- 2. MOTIVATIONAL & SEO -->
+                <div class="card-panel p-5 space-y-3 border-l-4 border-gold">
+                    <h3 data-i18n="guide_2_h" class="font-bold text-gold flex items-center gap-2 text-sm">
+                        <i class="fas fa-quote-right"></i> 2. Frasi Motivazionali & Pacchetto SEO
+                    </h3>
+                    <p data-i18n="guide_2_p" class="text-xs text-gray-300 leading-relaxed">
+                        Sfoglia la libreria di citazioni ed inviale direttamente nell'editor. Nel generatore SEO, inserisci le tue parole chiave principali: l'applicazione genererà il testo completo pronto da incollare su YouTube, TikTok o Reels.
+                    </p>
+                </div>
+
+                <!-- 3. PLANNER & ARCHIVE -->
+                <div class="card-panel p-5 space-y-3 border-l-4 border-blue-500">
+                    <h3 data-i18n="guide_3_h" class="font-bold text-gold flex items-center gap-2 text-sm">
+                        <i class="fas fa-calendar-alt"></i> 3. Pianificatore Editoriale & Archivio
+                    </h3>
+                    <p data-i18n="guide_3_p" class="text-xs text-gray-300 leading-relaxed">
+                        Organizza le scadenze del tuo canale nel Pianificatore impostando lo stato (Idea, Da realizzare, In lavorazione, Pronto, Pubblicato). Usa l'Archivio Centrale per cercare, duplicare e riutilizzare i vecchi copioni salvati.
+                    </p>
+                </div>
+
+                <!-- 4. BACKUP & JSON -->
+                <div class="card-panel p-5 space-y-3 border-l-4 border-green-500">
+                    <h3 data-i18n="guide_4_h" class="font-bold text-gold flex items-center gap-2 text-sm">
+                        <i class="fas fa-database"></i> 4. Esportazione & Importazione Backup JSON
+                    </h3>
+                    <p data-i18n="guide_4_p" class="text-xs text-gray-300 leading-relaxed">
+                        Tutti i dati rimangono salvati nel browser. Nella sezione Backup puoi scaricare l'intero archivio in un file `.json` e ripristinarlo su qualsiasi altro dispositivo o browser in totale sicurezza e privacy.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Social Banner in Guida -->
+            <div class="card-panel p-5 bg-gradient-to-r from-anthracite-800 via-anthracite-700 to-anthracite-800 border border-gold/40 text-center space-y-3">
+                <h3 data-i18n="guide_community_title" class="font-bold text-white text-base">Unisciti alla Community di Digital Creator Lab</h3>
+                <p data-i18n="guide_community_p" class="text-xs text-gray-300 max-w-xl mx-auto">Ricevi trucchi daily, idee per video virali e aggiornamenti sui nostri tool gratuiti seguendo i canali ufficiali:</p>
+                <div class="flex flex-wrap justify-center gap-3 pt-2">
+                    <a href="https://whatsapp.com/channel/0029Vb8tqXaB4hdRxxjPkp3C" target="_blank" class="btn-gold px-4 py-2 rounded-lg text-xs flex items-center gap-2">
+                        <i class="fab fa-whatsapp text-lg"></i> <span data-i18n="btn_whatsapp">Canale WhatsApp</span>
+                    </a>
+                    <a href="https://www.tiktok.com/@digital_creatorlab" target="_blank" class="btn-outline-gold px-4 py-2 rounded-lg text-xs flex items-center gap-2">
+                        <i class="fab fa-tiktok text-lg"></i> <span data-i18n="btn_tiktok">Seguici su TikTok</span>
+                    </a>
+                    <a href="https://www.facebook.com/DigitalCreatorLabIT/" target="_blank" class="btn-outline-gold px-4 py-2 rounded-lg text-xs flex items-center gap-2">
+                        <i class="fab fa-facebook text-lg"></i> <span data-i18n="btn_facebook">Seguici su Facebook</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODALE AGGIUNTA/MODIFICA PIANIFICATORE EDITORIALE -->
+    <div id="modal-planner" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+        <div class="card-panel w-full max-w-md p-6 bg-anthracite-800 space-y-4 border border-gold/40">
+            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                <h3 id="modal-planner-title" class="font-bold text-white text-base">Pianifica Nuovo Video</h3>
+                <button onclick="closePlannerModal()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+            <input type="hidden" id="planner-edit-id" value="">
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1">Titolo Video *</label>
+                <input type="text" id="planner-input-title" placeholder="Es: 5 Trucchi per iPhone" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none gold-border-glow">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1">Piattaforma</label>
+                <select id="planner-input-platform" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none">
+                    <option value="YouTube Shorts">YouTube Shorts</option>
+                    <option value="TikTok">TikTok</option>
+                    <option value="Instagram Reels">Instagram Reels</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1">Data Pubblicazione</label>
+                <input type="date" id="planner-input-date" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1">Stato Progetto</label>
+                <select id="planner-input-status" class="w-full bg-anthracite-900 border border-white/10 rounded-lg p-2.5 text-sm text-white focus:outline-none">
+                    <option value="Idea">Idea</option>
+                    <option value="Da realizzare">Da realizzare</option>
+                    <option value="In lavorazione">In lavorazione</option>
+                    <option value="Pronto">Pronto</option>
+                    <option value="Pubblicato">Pubblicato</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closePlannerModal()" class="btn-outline-gold px-4 py-2 rounded-lg text-xs">Annulla</button>
+                <button onclick="savePlannerItem()" class="btn-gold px-4 py-2 rounded-lg text-xs">Salva nel Calendario</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ==========================================================================
+           1. PRESETS E COSTANTI GLOBALI (Dichiarate all'inizio del file)
+           ========================================================================== */
+        const PRESET_QUOTES = [
+            { id: 'q1', category: 'Successo & Azione', text: 'Non aspettare l’opportunità perfetta. Creala tu con l’azione di oggi.', author: 'Digital Creator Lab', length: 'Breve' },
+            { id: 'q2', category: 'Mentalità & Crescita', text: 'La disciplina ti porta dove la motivazione non riesce ad arrivare.', author: 'Digital Creator Lab', length: 'Breve' },
+            { id: 'q3', category: 'Resilienza & Forza', text: 'Ogni fallimento è solo la prima bozza del tuo successo.', author: 'Digital Creator Lab', length: 'Breve' },
+            { id: 'q4', category: 'Focus & Produttività', text: 'Fai una cosa sola oggi, ma falla con una concentrazione incrollabile.', author: 'Digital Creator Lab', length: 'Medio' },
+            { id: 'q5', category: 'Ispirazione & Sogni', text: 'Il tuo unico limite reale è la storia che continui a raccontarti.', author: 'Digital Creator Lab', length: 'Breve' }
+        ];
+
+        const PRESET_IDEAS = [
+            { id: 'i1', category: 'Motivazionale', title: '3 Abitudini per Cambiare Vita', desc: 'Spiega 3 micro-abitudini da applicare ogni mattina nei primi 10 minuti.' },
+            { id: 'i2', category: 'Tecnologia & AI', title: 'Top 3 Tool di Intelligenza Artificiale Gratuiti', desc: 'Mostra rapida di 3 strumenti IA utili per velocizzare il lavoro.' },
+            { id: 'i3', category: 'Divertimento', title: 'Aspettativa vs Realtà del Freelance', desc: 'Confronto ironico su come immaginiamo il lavoro da casa vs come è realmente.' },
+            { id: 'i4', category: 'Educativo & Tips', title: 'Come Memorizzare Informazioni Più Velocemente', desc: 'Spiegazione del metodo della ripetizione dilazionata in 30 secondi.' },
+            { id: 'i5', category: 'Promozione & App', title: 'Perché tutti usano questa app nel 2026', desc: 'Presentazione rapida di una funzionalità chiave per risolvere un problema comune.' },
+            { id: 'i6', category: 'Relax & Musica', title: '5 Minuti per Respirare e Ricaricarsi', desc: 'Short guidato di rilassamento visivo con musica ambient di sottofondo.' }
+        ];
+
+        const translations = {
+            IT: {
+                tagline: "Il tuo laboratorio creativo per video brevi.",
+                nav_dashboard: "Dashboard",
+                nav_generator: "Generatore Shorts",
+                nav_quotes: "Frasi Motivazionali",
+                nav_seo: "Descrizioni & SEO",
+                nav_ideas: "Generatore Idee",
+                nav_planner: "Pianificatore",
+                nav_archive: "Archivio Progetti",
+                nav_backup: "Backup & Dati",
+                nav_guide: "Guida Utente",
+                community_title: "Community & Social",
+                btn_whatsapp: "Canale WhatsApp",
+                btn_tiktok: "Seguici su TikTok",
+                btn_facebook: "Seguici su Facebook",
+                mobile_menu: "MENU NAVIGAZIONE",
+                lang_label: "Lingua / Language:",
+                dash_welcome_title: "Benvenuto in Shorts Creator Studio",
+                dash_welcome_desc: "Il tuo ambiente professionale e completo per ideare, strutturare e pianificare video brevi d'impatto per YouTube Shorts, TikTok e Instagram Reels. Tutto conservato al 100% nel tuo browser in totale privacy.",
+                btn_new_short: "Nuovo Short",
+                btn_explore_ideas: "Esplora Idee",
+                stat_projects: "Progetti Salvati",
+                stat_scripts: "Script Completi",
+                stat_planner: "Video Pianificati",
+                guide_title: "Guida Utente & Manuale Creator",
+                guide_subtitle: "Come sfruttare al massimo Shorts Creator Studio per far crescere i tuoi canali.",
+                guide_1_h: "1. Come Scrivere uno Short & Hook Efficace",
+                guide_1_p: "Nei primi 3-5 secondi lo spettatore decide se scorrere via o guardare. Struttura il video in 5 fasi: Apertura (Hook) d'impatto, Sviluppo chiaro del valore, Momento Forte (Climax) memorabile, Conclusione sintetica e Call to Action (CTA) precisa.",
+                guide_2_h: "2. Frasi Motivazionali & Pacchetto SEO",
+                guide_2_p: "Sfoglia la libreria di citazioni ed inviale direttamente nell'editor. Nel generatore SEO, inserisci le tue parole chiave principali: l'applicazione genererà il testo completo pronto da incollare su YouTube, TikTok o Reels.",
+                guide_3_h: "3. Pianificatore Editoriale & Archivio",
+                guide_3_p: "Organizza le scadenze del tuo canale nel Pianificatore impostando lo stato (Idea, Da realizzare, In lavorazione, Pronto, Pubblicato). Usa l'Archivio Centrale per cercare, duplicare e riutilizzare i vecchi copioni salvati.",
+                guide_4_h: "4. Esportazione & Importazione Backup JSON",
+                guide_4_p: "Tutti i dati rimangono salvati nel browser. Nella sezione Backup puoi scaricare l'intero archivio in un file .json e ripristinarlo su qualsiasi altro dispositivo o browser in totale sicurezza e privacy.",
+                guide_community_title: "Unisciti alla Community di Digital Creator Lab",
+                guide_community_p: "Ricevi trucchi daily, idee per video virali e aggiornamenti sui nostri tool gratuiti seguendo i canali ufficiali:"
+            },
+            EN: {
+                tagline: "Your creative studio for short videos.",
+                nav_dashboard: "Dashboard",
+                nav_generator: "Shorts Generator",
+                nav_quotes: "Motivational Quotes",
+                nav_seo: "Descriptions & SEO",
+                nav_ideas: "Idea Generator",
+                nav_planner: "Editorial Planner",
+                nav_archive: "Project Archive",
+                nav_backup: "Backup & Data",
+                nav_guide: "User Guide",
+                community_title: "Community & Social",
+                btn_whatsapp: "WhatsApp Channel",
+                btn_tiktok: "Follow on TikTok",
+                btn_facebook: "Follow on Facebook",
+                mobile_menu: "NAVIGATION MENU",
+                lang_label: "Language / Lingua:",
+                dash_welcome_title: "Welcome to Shorts Creator Studio",
+                dash_welcome_desc: "Your complete professional toolkit to draft, structure, and plan high-impact short videos for YouTube Shorts, TikTok, and Instagram Reels. 100% saved in your browser with privacy.",
+                btn_new_short: "New Short",
+                btn_explore_ideas: "Explore Ideas",
+                stat_projects: "Saved Projects",
+                stat_scripts: "Full Scripts",
+                stat_planner: "Planned Videos",
+                guide_title: "User Guide & Creator Manual",
+                guide_subtitle: "How to maximize Shorts Creator Studio to grow your channel reach.",
+                guide_1_h: "1. How to Write an Effective Short & Hook",
+                guide_1_p: "In the first 3-5 seconds viewers decide to stay or scroll away. Structure your video in 5 phases: High-impact Hook, Clear Value Body, Memorable Climax, Concise Conclusion, and Specific Call to Action (CTA).",
+                guide_2_h: "2. Motivational Quotes & SEO Package",
+                guide_2_p: "Browse quotes library and send them straight into the script editor. In the SEO generator, type your main keywords: the app builds a full formatted text ready to paste on YouTube, TikTok or Reels.",
+                guide_3_h: "3. Editorial Planner & Project Archive",
+                guide_3_p: "Organize channel deadlines in the Planner setting project status (Idea, To Do, In Progress, Ready, Published). Use Central Archive to search, duplicate and reuse saved scripts.",
+                guide_4_h: "4. JSON Backup Export & Import",
+                guide_4_p: "All data stays saved locally in your browser. In the Backup section, download your database as a .json file and restore it on any device with 100% privacy.",
+                guide_community_title: "Join the Digital Creator Lab Community",
+                guide_community_p: "Get daily growth tips, viral video ideas, and updates on free tools by following our official channels:"
+            }
+        };
+
+        /* ==========================================================================
+           2. GESTIONE STATO LOCALE E LOCALSTORAGE
+           ========================================================================== */
+        let appState = {
+            projects: [],   // Contiene script e pacchetti SEO
+            quotes: [...PRESET_QUOTES],
+            ideas: [...PRESET_IDEAS],
+            planner: [],
+            lang: 'IT',
+            lastSaved: new Date().toISOString()
+        };
+
+        let currentLang = 'IT';
+
+        function saveStateToLocalStorage() {
+            appState.lastSaved = new Date().toISOString();
+            localStorage.setItem('SHORTS_CREATOR_STUDIO_DB', JSON.stringify(appState));
+            const saveSpan = document.getElementById('last-save-timestamp');
+            if (saveSpan) {
+                saveSpan.innerText = new Date(appState.lastSaved).toLocaleString();
+            }
+        }
+
+        function loadStateFromLocalStorage() {
+            const data = localStorage.getItem('SHORTS_CREATOR_STUDIO_DB');
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    appState = Object.assign({}, appState, parsed);
+                    if(!appState.quotes || appState.quotes.length === 0) appState.quotes = [...PRESET_QUOTES];
+                    if(!appState.ideas || appState.ideas.length === 0) appState.ideas = [...PRESET_IDEAS];
+                } catch(e) {
+                    console.error("Errore lettura dati salvati", e);
+                }
+            } else {
+                appState.planner = [
+                    { id: 'p1', title: '3 Tool di IA gratuiti', platform: 'YouTube Shorts', date: '2026-11-10', status: 'In lavorazione' },
+                    { id: 'p2', title: 'La regola dei 5 secondi', platform: 'TikTok', date: '2026-11-12', status: 'Pronto' }
+                ];
+                saveStateToLocalStorage();
+            }
+        }
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            appState.lang = lang;
+            saveStateToLocalStorage();
+
+            // Sincronizza i select della lingua
+            document.querySelectorAll('.lang-select').forEach(select => {
+                select.value = lang;
+            });
+
+            // Aggiorna elementi HTML con data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+        }
+
+        /* ==========================================================================
+           3. INIZIALIZZAZIONE ALL'AVVIO
+           ========================================================================== */
+        window.onload = function() {
+            loadStateFromLocalStorage();
+            changeLanguage(appState.lang || 'IT');
+            updateDashboardStats();
+            renderRecentProjects();
+            renderQuotesGrid();
+            renderIdeasGrid();
+            renderPlanner();
+            renderArchive();
+            updateScriptStats();
+        };
+
+        /* ==========================================================================
+           4. NAVIGAZIONE ED INTERFACCIA
+           ========================================================================== */
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if(targetTab) targetTab.classList.remove('hidden');
+
+            const targetNav = document.getElementById(`nav-${tabId}`);
+            if(targetNav) targetNav.classList.add('active');
+
+            if (tabId === 'dashboard') {
+                updateDashboardStats();
+                renderRecentProjects();
+            } else if (tabId === 'archive') {
+                renderArchive();
+            } else if (tabId === 'planner') {
+                renderPlanner();
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.innerText = message;
+            if(isError) {
+                toastIcon.className = "fas fa-exclamation-circle text-red-500";
+                toast.style.borderColor = "#ef4444";
+            } else {
+                toastIcon.className = "fas fa-check-circle text-gold";
+                toast.style.borderColor = "#d4af37";
+            }
+
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        /* ==========================================================================
+           5. DASHBOARD
+           ========================================================================== */
+        function updateDashboardStats() {
+            const totalProjects = appState.projects.length;
+            const totalScripts = appState.projects.filter(p => p.type === 'Script').length;
+            const scheduledVideos = appState.planner.length;
+
+            document.getElementById('stat-total-projects').innerText = totalProjects;
+            document.getElementById('stat-total-scripts').innerText = totalScripts;
+            document.getElementById('stat-scheduled-videos').innerText = scheduledVideos;
+        }
+
+        function renderRecentProjects() {
+            const container = document.getElementById('recent-projects-list');
+            if(appState.projects.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-6 text-gray-500 text-xs">
+                        Nessun progetto ancora creato. Clicca su "Nuovo Short" per iniziare.
+                    </div>
+                `;
+                return;
+            }
+
+            const sorted = [...appState.projects].sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt)).slice(0, 4);
+            container.innerHTML = sorted.map(p => `
+                <div class="p-3 bg-anthracite-900 rounded-lg border border-white/5 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-xs">
+                            <i class="${p.type === 'Script' ? 'fas fa-scroll' : 'fas fa-hashtag'}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-white">${escapeHtml(p.title || 'Senza Titolo')}</h4>
+                            <p class="text-[11px] text-gray-400">${p.category || 'Generale'} • Modificato: ${new Date(p.updatedAt).toLocaleDateString('it-IT')}</p>
+                        </div>
+                    </div>
+                    <button onclick="loadProjectIntoEditor('${p.id}')" class="btn-outline-gold px-3 py-1 rounded text-xs flex items-center gap-1">
+                        <i class="fas fa-edit"></i> Apri
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        /* ==========================================================================
+           6. GENERATORE SHORTS & EDITOR COPIONE
+           ========================================================================== */
+        function startNewScript() {
+            resetEditorForm();
+            switchTab('generator');
+        }
+
+        function resetEditorForm() {
+            document.getElementById('editor-project-id').value = '';
+            document.getElementById('script-title').value = '';
+            document.getElementById('script-topic').value = '';
+            document.getElementById('script-target').value = '';
+            document.getElementById('sec-hook').value = '';
+            document.getElementById('sec-body').value = '';
+            document.getElementById('sec-climax').value = '';
+            document.getElementById('sec-conclusion').value = '';
+            document.getElementById('sec-cta').value = '';
+            updateScriptStats();
+            showToast('Editor resettato.');
+        }
+
+        function updateScriptStats() {
+            const hook = document.getElementById('sec-hook').value;
+            const body = document.getElementById('sec-body').value;
+            const climax = document.getElementById('sec-climax').value;
+            const conclusion = document.getElementById('sec-conclusion').value;
+            const cta = document.getElementById('sec-cta').value;
+
+            const fullText = `${hook} ${body} ${climax} ${conclusion} ${cta}`.trim();
+            const words = fullText ? fullText.split(/\s+/).filter(w => w.length > 0).length : 0;
+            const estimatedSeconds = Math.round((words / 140) * 60);
+
+            document.getElementById('script-word-count').innerText = words;
+            document.getElementById('script-time-estimate').innerText = `${estimatedSeconds} sec`;
+        }
+
+        function autoFillScriptTemplate() {
+            document.getElementById('script-title').value = "3 Errori che Distruggono i Tuoi Risultati";
+            document.getElementById('script-topic').value = "Produttività e Focus";
+            document.getElementById('sec-hook').value = "Stai ancora commettendo questo errore ogni mattina? Fermi tutti e ascolta.";
+            document.getElementById('sec-body').value = "1. Guardare lo smartphone appena sveglio. 2. Non pianificare le 3 priorità del giorno. 3. Lavorare senza pause strategiche.";
+            document.getElementById('sec-climax').value = "Il tuo cervello ha bisogno di chiarezza, non di stimoli continui.";
+            document.getElementById('sec-conclusion').value = "Cambia queste 3 abitudini e raddoppierai i tuoi risultati in una settimana.";
+            document.getElementById('sec-cta').value = "Salva questo video per non dimenticarlo e seguimi per altri consigli!";
+            updateScriptStats();
+            showToast('Struttura esempio caricata!');
+        }
+
+        function saveCurrentScriptProject() {
+            const title = document.getElementById('script-title').value.trim();
+            if(!title) {
+                showToast('Inserisci un titolo prima di salvare!', true);
+                return;
+            }
+
+            const existingId = document.getElementById('editor-project-id').value;
+            const projectData = {
+                id: existingId || 'proj_' + Date.now(),
+                type: 'Script',
+                title: title,
+                topic: document.getElementById('script-topic').value,
+                category: document.getElementById('script-category').value,
+                platform: document.getElementById('script-platform').value,
+                duration: document.getElementById('script-duration').value,
+                tone: document.getElementById('script-tone').value,
+                target: document.getElementById('script-target').value,
+                hook: document.getElementById('sec-hook').value,
+                body: document.getElementById('sec-body').value,
+                climax: document.getElementById('sec-climax').value,
+                conclusion: document.getElementById('sec-conclusion').value,
+                cta: document.getElementById('sec-cta').value,
+                updatedAt: new Date().toISOString()
+            };
+
+            if(existingId) {
+                const idx = appState.projects.findIndex(p => p.id === existingId);
+                if(idx !== -1) appState.projects[idx] = projectData;
+            } else {
+                appState.projects.push(projectData);
+                document.getElementById('editor-project-id').value = projectData.id;
+            }
+
+            saveStateToLocalStorage();
+            showToast('Progetto salvato con successo nell\'archivio!');
+        }
+
+        function copyFullScriptToClipboard() {
+            const title = document.getElementById('script-title').value;
+            const hook = document.getElementById('sec-hook').value;
+            const body = document.getElementById('sec-body').value;
+            const climax = document.getElementById('sec-climax').value;
+            const conclusion = document.getElementById('sec-conclusion').value;
+            const cta = document.getElementById('sec-cta').value;
+
+            const scriptFormatted = `🎬 COPIONE: ${title}\n\n[HOOK]\n${hook}\n\n[SVILUPPO]\n${body}\n\n[MOMENTO FORTE]\n${climax}\n\n[CONCLUSIONE]\n${conclusion}\n\n[CTA]\n${cta}`;
+
+            copyTextToClipboard(scriptFormatted);
+        }
+
+        /* ==========================================================================
+           7. FRASI MOTIVAZIONALI
+           ========================================================================== */
+        function renderQuotesGrid() {
+            const container = document.getElementById('quotes-grid');
+            const cat = document.getElementById('quote-filter-category').value;
+            const len = document.getElementById('quote-filter-length').value;
+
+            let filtered = appState.quotes;
+            if(cat !== 'ALL') filtered = filtered.filter(q => q.category === cat);
+            if(len !== 'ALL') filtered = filtered.filter(q => q.length === len);
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 col-span-2 text-center py-4">Nessuna frase trovata per i filtri selezionati.</p>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(q => `
+                <div class="card-panel p-4 flex flex-col justify-between space-y-3">
+                    <p class="text-sm italic text-gray-200">"${escapeHtml(q.text)}"</p>
+                    <div class="flex items-center justify-between border-t border-white/5 pt-2">
+                        <span class="text-[10px] text-gold uppercase font-semibold">${q.category}</span>
+                        <div class="flex gap-1">
+                            <button onclick="copyTextToClipboard('${escapeHtml(q.text)}')" class="px-2 py-1 bg-anthracite-700 hover:bg-gold hover:text-anthracite-900 rounded text-xs transition" title="Copia">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button onclick="sendQuoteTextToScript('${escapeHtml(q.text)}')" class="px-2 py-1 bg-anthracite-700 hover:bg-gold hover:text-anthracite-900 rounded text-xs transition" title="Usa nel Copione">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('quote-filter-category').addEventListener('change', renderQuotesGrid);
+        document.getElementById('quote-filter-length').addEventListener('change', renderQuotesGrid);
+
+        function generateRandomQuote() {
+            const quotes = appState.quotes;
+            if(quotes.length === 0) return;
+            const random = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            document.getElementById('featured-quote-text').innerText = `"${random.text}"`;
+            document.getElementById('featured-quote-cat').innerText = random.category;
+            document.getElementById('featured-quote-author').innerText = random.author || 'Creator Lab';
+            showToast('Nuova frase selezionata!');
+        }
+
+        function copyFeaturedQuote() {
+            const txt = document.getElementById('featured-quote-text').innerText;
+            copyTextToClipboard(txt);
+        }
+
+        function sendQuoteToEditor() {
+            const txt = document.getElementById('featured-quote-text').innerText.replace(/^"|"$/g, '');
+            sendQuoteTextToScript(txt);
+        }
+
+        function sendQuoteTextToScript(text) {
+            switchTab('generator');
+            document.getElementById('sec-climax').value = text;
+            updateScriptStats();
+            showToast('Frase inserita nella sezione Momento Forte!');
+        }
+
+        function openCustomQuoteModal() {
+            const text = prompt("Inserisci la tua frase motivazionale personalizzata:");
+            if(text && text.trim()) {
+                const newQ = {
+                    id: 'q_' + Date.now(),
+                    category: 'Mentalità & Crescita',
+                    text: text.trim(),
+                    author: 'Utente',
+                    length: text.length > 80 ? 'Medio' : 'Breve'
+                };
+                appState.quotes.push(newQ);
+                saveStateToLocalStorage();
+                renderQuotesGrid();
+                showToast('Nuova frase salvata con successo!');
+            }
+        }
+
+        /* ==========================================================================
+           8. GENERATORE DESCRIZIONI E HASHTAG SEO
+           ========================================================================== */
+        function generateSEOPackage() {
+            const title = document.getElementById('seo-title').value.trim() || "Il Segreto della Produttività";
+            const topic = document.getElementById('seo-topic').value.trim() || "Crescita Personale";
+            const platform = document.getElementById('seo-platform').value;
+            const kwInput = document.getElementById('seo-keywords').value;
+
+            const keywordsArr = kwInput ? kwInput.split(',').map(k => k.trim()) : ['shorts', 'motivazione', 'viral', 'mindset'];
+            const hashtags = keywordsArr.map(k => `#${k.replace(/\s+/g, '')}`).join(' ') + ' #Shorts #Reels #CreatorLab';
+
+            const outputText = 
+`🔥 ${title.toUpperCase()} 🔥
+
+In questo video parliamo di ${topic} e di come trasformare la tua routine quotidiana.
+
+📌 Punti chiave trattati:
+- Strategia pratica per ${topic}
+- Consigli per ottimizzare il tuo tempo
+- Azione immediata da applicare oggi
+
+👇 Lascia un commento: Tu cosa ne pensi? Scrivilo qui sotto!
+🔔 Iscriviti per non perdere i prossimi video brevi d'impatto.
+
+---
+🏷️ HASHTAG & KEYWORDS SEO:
+${hashtags}
+Piattaforma ottimizzata: ${platform}
+`;
+
+            document.getElementById('seo-output').value = outputText;
+            showToast('Pacchetto SEO generato!');
+        }
+
+        function copySEOPackage() {
+            const text = document.getElementById('seo-output').value;
+            if(!text) {
+                showToast('Genera prima un testo SEO!', true);
+                return;
+            }
+            copyTextToClipboard(text);
+        }
+
+        function saveSEOToProject() {
+            const text = document.getElementById('seo-output').value;
+            const title = document.getElementById('seo-title').value || 'SEO Package ' + new Date().toLocaleDateString();
+
+            if(!text) {
+                showToast('Genera prima un testo da salvare!', true);
+                return;
+            }
+
+            const projectData = {
+                id: 'proj_' + Date.now(),
+                type: 'SEO',
+                title: 'SEO: ' + title,
+                category: document.getElementById('seo-topic').value || 'Generale',
+                content: text,
+                updatedAt: new Date().toISOString()
+            };
+
+            appState.projects.push(projectData);
+            saveStateToLocalStorage();
+            showToast('Pacchetto SEO salvato nell\'archivio!');
+        }
+
+        /* ==========================================================================
+           9. GENERATORE DI IDEE
+           ========================================================================== */
+        let currentIdeaCategoryFilter = 'ALL';
+
+        function renderIdeasGrid() {
+            const container = document.getElementById('ideas-grid');
+            let filtered = appState.ideas;
+            if(currentIdeaCategoryFilter !== 'ALL') {
+                filtered = filtered.filter(i => i.category === currentIdeaCategoryFilter);
+            }
+
+            container.innerHTML = filtered.map(idea => `
+                <div class="card-panel p-4 flex flex-col justify-between space-y-3">
+                    <div>
+                        <span class="text-[10px] text-gold uppercase font-bold px-2 py-0.5 rounded bg-gold/10 border border-gold/20 mb-2 inline-block">${idea.category}</span>
+                        <h4 class="font-bold text-sm text-white mb-1">${escapeHtml(idea.title)}</h4>
+                        <p class="text-xs text-gray-400">${escapeHtml(idea.desc)}</p>
+                    </div>
+                    <div class="flex justify-end gap-2 border-t border-white/5 pt-2">
+                        <button onclick="convertIdeaToProject('${escapeHtml(idea.title)}', '${escapeHtml(idea.category)}')" class="btn-gold px-3 py-1 rounded text-xs flex items-center gap-1">
+                            <i class="fas fa-plus"></i> Usa come Short
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterIdeas(cat) {
+            currentIdeaCategoryFilter = cat;
+            document.querySelectorAll('.idea-filter-btn').forEach(btn => {
+                if(btn.getAttribute('data-cat') === cat) {
+                    btn.className = "idea-filter-btn px-3 py-1 rounded-full text-xs bg-gold text-anthracite-900 font-bold";
+                } else {
+                    btn.className = "idea-filter-btn px-3 py-1 rounded-full text-xs bg-anthracite-700 text-gray-300 hover:text-white";
+                }
+            });
+            renderIdeasGrid();
+        }
+
+        function pickRandomIdea() {
+            const ideas = appState.ideas;
+            const random = ideas[Math.floor(Math.random() * ideas.length)];
+            alert(`💡 IDEA CASUALE SELEZIONATA:\n\n[${random.category}]\n${random.title}\n\n${random.desc}`);
+        }
+
+        function convertIdeaToProject(title, category) {
+            switchTab('generator');
+            resetEditorForm();
+            document.getElementById('script-title').value = title;
+            document.getElementById('script-topic').value = title;
+            showToast('Idea trasferita nell\'editor copioni!');
+        }
+
+        /* ==========================================================================
+           10. PIANIFICATORE EDITORIALE (SCHEDULER)
+           ========================================================================== */
+        function renderPlanner() {
+            const container = document.getElementById('planner-cards-grid');
+            const statusFilter = document.getElementById('planner-status-filter').value;
+            const platformFilter = document.getElementById('planner-platform-filter').value;
+
+            let filtered = appState.planner;
+            if(statusFilter !== 'ALL') filtered = filtered.filter(item => item.status === statusFilter);
+            if(platformFilter !== 'ALL') filtered = filtered.filter(item => item.platform === platformFilter);
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 col-span-3 text-center py-6">Nessun video in pianificazione per questi filtri.</p>`;
+                return;
+            }
+
+            const statusColors = {
+                'Idea': 'bg-gray-500/20 text-gray-300 border-gray-500/40',
+                'Da realizzare': 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40',
+                'In lavorazione': 'bg-blue-500/20 text-blue-300 border-blue-500/40',
+                'Pronto': 'bg-purple-500/20 text-purple-300 border-purple-500/40',
+                'Pubblicato': 'bg-green-500/20 text-green-300 border-green-500/40'
+            };
+
+            container.innerHTML = filtered.map(item => `
+                <div class="card-panel p-4 flex flex-col justify-between space-y-3">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${statusColors[item.status] || 'bg-gray-700'}">${item.status}</span>
+                            <span class="text-xs text-gold font-semibold"><i class="fas fa-calendar"></i> ${item.date || 'Data N.D.'}</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-white mb-1">${escapeHtml(item.title)}</h4>
+                        <p class="text-xs text-gray-400"><i class="fas fa-video text-gold/60"></i> ${item.platform}</p>
+                    </div>
+                    <div class="flex justify-end gap-2 border-t border-white/5 pt-2">
+                        <button onclick="editPlannerItem('${item.id}')" class="px-2 py-1 bg-anthracite-700 hover:bg-gold hover:text-anthracite-900 rounded text-xs transition"><i class="fas fa-edit"></i></button>
+                        <button onclick="deletePlannerItem('${item.id}')" class="px-2 py-1 bg-anthracite-700 hover:bg-red-500 hover:text-white rounded text-xs transition"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openPlannerModal() {
+            document.getElementById('planner-edit-id').value = '';
+            document.getElementById('planner-input-title').value = '';
+            document.getElementById('planner-input-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modal-planner').classList.remove('hidden');
+        }
+
+        function closePlannerModal() {
+            document.getElementById('modal-planner').classList.add('hidden');
+        }
+
+        function savePlannerItem() {
+            const title = document.getElementById('planner-input-title').value.trim();
+            if(!title) {
+                showToast('Inserisci un titolo per la pianificazione!', true);
+                return;
+            }
+
+            const editId = document.getElementById('planner-edit-id').value;
+            const newItem = {
+                id: editId || 'plan_' + Date.now(),
+                title: title,
+                platform: document.getElementById('planner-input-platform').value,
+                date: document.getElementById('planner-input-date').value,
+                status: document.getElementById('planner-input-status').value
+            };
+
+            if(editId) {
+                const idx = appState.planner.findIndex(p => p.id === editId);
+                if(idx !== -1) appState.planner[idx] = newItem;
+            } else {
+                appState.planner.push(newItem);
+            }
+
+            saveStateToLocalStorage();
+            renderPlanner();
+            closePlannerModal();
+            showToast('Video inserito nel calendario!');
+        }
+
+        function editPlannerItem(id) {
+            const item = appState.planner.find(p => p.id === id);
+            if(!item) return;
+            document.getElementById('planner-edit-id').value = item.id;
+            document.getElementById('planner-input-title').value = item.title;
+            document.getElementById('planner-input-platform').value = item.platform;
+            document.getElementById('planner-input-date').value = item.date;
+            document.getElementById('planner-input-status').value = item.status;
+            document.getElementById('modal-planner').classList.remove('hidden');
+        }
+
+        function deletePlannerItem(id) {
+            if(confirm("Sei sicuro di voler rimuovere questo elemento dal calendario?")) {
+                appState.planner = appState.planner.filter(p => p.id !== id);
+                saveStateToLocalStorage();
+                renderPlanner();
+                showToast('Elemento eliminato.');
+            }
+        }
+
+        /* ==========================================================================
+           11. ARCHIVIO PROGETTI
+           ========================================================================== */
+        function renderArchive() {
+            const container = document.getElementById('archive-list');
+            const search = document.getElementById('archive-search').value.toLowerCase();
+            const catFilter = document.getElementById('archive-category-filter').value;
+            const sortBy = document.getElementById('archive-sort').value;
+
+            let list = [...appState.projects];
+
+            if(catFilter !== 'ALL') {
+                list = list.filter(p => p.type === catFilter);
+            }
+
+            if(search) {
+                list = list.filter(p => 
+                    (p.title && p.title.toLowerCase().includes(search)) || 
+                    (p.category && p.category.toLowerCase().includes(search))
+                );
+            }
+
+            if(sortBy === 'newest') list.sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+            if(sortBy === 'oldest') list.sort((a,b) => new Date(a.updatedAt) - new Date(b.updatedAt));
+            if(sortBy === 'title') list.sort((a,b) => (a.title || '').localeCompare(b.title || ''));
+
+            if(list.length === 0) {
+                container.innerHTML = `<div class="card-panel p-6 text-center text-xs text-gray-500">Nessun elemento presente nell'archivio.</div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(item => `
+                <div class="card-panel p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-base flex-shrink-0">
+                            <i class="${item.type === 'Script' ? 'fas fa-scroll' : 'fas fa-hashtag'}"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold text-gold uppercase tracking-widest">${item.type}</span>
+                                <span class="text-xs text-gray-500">• ${new Date(item.updatedAt).toLocaleString('it-IT')}</span>
+                            </div>
+                            <h4 class="font-bold text-sm text-white">${escapeHtml(item.title || 'Senza Titolo')}</h4>
+                            <p class="text-xs text-gray-400">${item.category || 'Generale'}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="loadProjectIntoEditor('${item.id}')" class="btn-outline-gold px-3 py-1.5 rounded text-xs flex items-center gap-1">
+                            <i class="fas fa-edit"></i> Apri / Modifica
+                        </button>
+                        <button onclick="duplicateProject('${item.id}')" class="px-3 py-1.5 bg-anthracite-700 hover:bg-gold hover:text-anthracite-900 rounded text-xs transition" title="Duplica">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button onclick="deleteProject('${item.id}')" class="px-3 py-1.5 bg-anthracite-700 hover:bg-red-500 hover:text-white rounded text-xs transition" title="Elimina">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadProjectIntoEditor(id) {
+            const project = appState.projects.find(p => p.id === id);
+            if(!project) return;
+
+            if(project.type === 'Script') {
+                switchTab('generator');
+                document.getElementById('editor-project-id').value = project.id;
+                document.getElementById('script-title').value = project.title || '';
+                document.getElementById('script-topic').value = project.topic || '';
+                document.getElementById('script-category').value = project.category || 'Produttività';
+                document.getElementById('script-platform').value = project.platform || 'Tutte le piattaforme';
+                document.getElementById('script-duration').value = project.duration || '30s';
+                document.getElementById('script-tone').value = project.tone || 'Coinvolgente';
+                document.getElementById('script-target').value = project.target || '';
+                document.getElementById('sec-hook').value = project.hook || '';
+                document.getElementById('sec-body').value = project.body || '';
+                document.getElementById('sec-climax').value = project.climax || '';
+                document.getElementById('sec-conclusion').value = project.conclusion || '';
+                document.getElementById('sec-cta').value = project.cta || '';
+                updateScriptStats();
+                showToast('Progetto caricato nell\'editor!');
+            } else if(project.type === 'SEO') {
+                switchTab('seo');
+                document.getElementById('seo-title').value = project.title ? project.title.replace('SEO: ', '') : '';
+                document.getElementById('seo-output').value = project.content || '';
+                showToast('Pacchetto SEO caricato!');
+            }
+        }
+
+        function duplicateProject(id) {
+            const original = appState.projects.find(p => p.id === id);
+            if(!original) return;
+
+            const copy = Object.assign({}, original, {
+                id: 'proj_' + Date.now(),
+                title: original.title + ' (Copia)',
+                updatedAt: new Date().toISOString()
+            });
+
+            appState.projects.push(copy);
+            saveStateToLocalStorage();
+            renderArchive();
+            showToast('Progetto duplicato!');
+        }
+
+        function deleteProject(id) {
+            if(confirm("Vuoi eliminare definitivamente questo progetto dall'archivio?")) {
+                appState.projects = appState.projects.filter(p => p.id !== id);
+                saveStateToLocalStorage();
+                renderArchive();
+                showToast('Progetto eliminato.');
+            }
+        }
+
+        /* ==========================================================================
+           12. BACKUP E RIPRISTINO JSON
+           ========================================================================== */
+        function exportDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `SHORTS_CREATOR_STUDIO_BACKUP_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Backup JSON scaricato con successo!');
+        }
+
+        function handleImportJSON(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if(importedData && (importedData.projects || importedData.planner)) {
+                        appState = Object.assign({}, appState, importedData);
+                        saveStateToLocalStorage();
+                        showToast("✅ Dati importati con successo!");
+                        setTimeout(() => location.reload(), 800);
+                    } else {
+                        showToast("⚠️ Il file JSON selezionato non sembra valido.", true);
+                    }
+                } catch(err) {
+                    showToast("❌ Errore durante la lettura del file JSON.", true);
+                }
+            };
+            if(event.target.files[0]) {
+                fileReader.readAsText(event.target.files[0]);
+            }
+        }
+
+        function confirmResetAllData() {
+            if(confirm("ATTENZIONE: Questa operazione cancellerà PERMANENTEMENTE tutti i tuoi copioni, idee e configurazioni salvate. Continuare?")) {
+                localStorage.removeItem('SHORTS_CREATOR_STUDIO_DB');
+                showToast("Tutti i dati sono stati azzerati.");
+                setTimeout(() => location.reload(), 800);
+            }
+        }
+
+        /* ==========================================================================
+           13. UTILITY GENERALI
+           ========================================================================== */
+        function copyTextToClipboard(text) {
+            if(!text) return;
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('Testo copiato negli appunti!');
+            } catch (err) {
+                showToast('Impossibile copiare il testo', true);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function escapeHtml(str) {
+            if(!str) return '';
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
